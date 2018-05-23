@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!--
+{% for post in posts %}
+<div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></di>
+{% endfor %}
+-->
+<div><p><b>Number of Rows in Table CancerData {{ counts }} </b></p></div>
+
+<div>
+  <p>Supported :</p>
+  <ul>
+    <li>/rows/#</li>
+    <li>/id/#</li>
+    <li>/filter/column_name/value</li>
+    <li>/add</li>
+    <li>/delete/# (by id)</li>
+  </ul>
+</div>
+{% endblock %}

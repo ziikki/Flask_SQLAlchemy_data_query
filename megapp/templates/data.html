@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div><p>Here is your query result:</p></div>
+{% if not query_result %}
+<div><p>Your search has no result.</p></div> 
+{% else %}
+{% for entry in query_result %}
+<div><p><b>{{ entry.id }} : </b>{{ entry.to_str() }}</p></div>
+{% endfor %}
+{% endif %}
+{% endblock %}

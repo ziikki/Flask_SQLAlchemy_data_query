@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add</h1>
+<hr/>
+
+<form action = "{{ request.path }}" method = "post">
+  <label for = "Class">Class</label><br>
+  <input type = "text" name = "Class" placeholder = "no-recurrence-events" /><br>
+  <label for = "age">Age</label><br>
+  <input type = "text" name = "age" placeholder = "10-19" /><br>
+  <label for = "menopause">menopause</label><br>
+  <input type = "text" name = "menopause" placeholder = "lt40"><br>
+  <label for = "tumor_size">tumor-size</label><br>
+  <textarea name = "tumor_size" placeholder = "5-9" /></textarea><br>
+  <label for = "inv_nodes"> inv_nodes </label><br>
+  <input type = "text" name = "inv_nodes" placeholder = "0-2" /><br>
+  <label for = "node_caps"> node_caps </label><br>
+  <input type = "text" name = "node_caps" placeholder = "yes" /><br> 
+  <label for = "deg_malig"> deg_malig </label><br>
+  <input type = "text" name = "deg_malig" placeholder = "3" /><br> 
+  <label for = "breast"> breast </label><br>
+  <input type = "text" name = "breast" placeholder = "left" /><br> 
+  <label for = "breast_quad"> breast_quad </label><br>
+  <input type = "text" name = "breast_quad" placeholder = "left-up" /><br> 
+  <label for = "irradiat">irradiat</label><br>
+  <input type = "text" name = "irradiat" placeholder = "yes" /><br> 
+
+  <input type = "submit" value = "Submit" />
+</form>
+{% endblock %}
