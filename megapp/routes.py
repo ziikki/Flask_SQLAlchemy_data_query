@@ -103,7 +103,11 @@ def delete(id):
     return redirect(url_for('index'))
 
 #########################################################
-
+@app.route('/showall')
+def show_all():
+    entries = CancerData.query.all()
+    return render_template('data.html', title='All entries', query_result=entries)
+    
 @app.route('/firstnrows/<int:rows>',methods=['GET'])
 def get_rows(rows):
     if rows > 0:
@@ -130,11 +134,14 @@ def find_value(column,value):
 @app.route('/unseen', methods = ['GET','POST'])
 def unseen():
     if request.method == 'POST':
-        if all([request.form['from'] ,request.form['to'] ,request.form['t_col'] ]):
+        if all(request.form.values()):
             args = { "from" : request.form['from'] ,
                      "to" : request.form['to'],
                      "target_column" : request.form['t_col'] }
             return redirect(url_for('modify_unseen', data = json.dumps(args)))
+        else:
+            flash("Please complete the form.")
+
     columns = CancerData.get_cols()
     return render_template("unseen.html", title="Check for Unseen", cols = columns)
 
@@ -143,22 +150,28 @@ def modify_unseen(data):
     args = json.loads(data)
     if request.method == 'POST':
         if all(request.form.values()) and request.form['btn']=='Modify':
-            # modify values
-            t_col = getattr(CancerData, args['target_column'])
-            old_val = request.form['formID']
-            new_val = request.form['new']
-            
-            entries = db.session.query(CancerData).filter(t_col==old_val)
-            cnt = entries.count()
-            entries.update({t_col:new_val})
-            print(db.session.new)
-            db.session.commit()
-            flash("Updated {} entries with Col[{}] value {} to {}".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
-            
-    result = check_unseen(args['from'],args['to'], args['target_column'])
+                # modify values
+                t_col = getattr(CancerData, args['target_column'])
+                old_val = request.form['formID']
+                new_val = request.form['new']
+                
+                entries = db.session.query(CancerData).filter(t_col==old_val)
+                cnt = entries.count()
+                entries.update({t_col:new_val})
+                print(db.session.new)
+                db.session.commit()
+                flash("Updated {} entries with Col[{}] value {} to {}".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
+        elif request.form['btn']=='Placeholder':
+            flash("Placeholder pressed")
+        else:
+            flash("Please complete the form.")
+    result = check_unseen(args)
     return render_template("modify_unseen.html", title="Unseen Values", result=result)
 
-def check_unseen(_from, _to , target_column):
+def check_unseen(args):
+    _from = args['from']
+    _to = args['to']
+    target_column = args['target_column']
     existing_values = to_list(
         db.session.query(getattr(CancerData, target_column))
         .filter( CancerData.id < _from)
@@ -194,18 +207,7 @@ def to_str(values, _for='values'):
 def find_new():
     args = request.get_json()
     #filtercolumn = args['filtercolumn'] #id for now
-    frange = args['filter_range']
-    target_column = args['target_column']
 
-    result = check_unseen(frange, target_column)
-    # if not request.form['old']:
-    #     new_entry = CancerData(Class = request.form['Class'])
-    #     print(new_entry.to_str())
-    #     db.session.add(new_entry)
-    #     db.session.flush()
-    #     # de.session.new #view objects in the session
-    #     flash('new entry created. id: {}'.format(new_entry.id))
-    #     db.session.commit()
-    #     return redirect(url_for('index'))
+    result = check_unseen(args)
     
     return render_template("new_value.html", title="UpdateValue", result=result)

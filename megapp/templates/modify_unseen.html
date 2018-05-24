@@ -12,13 +12,14 @@
 	<input type = "hidden" name = "formID" value = {{value}} />
 	<td><label for = "new">{{value}}</label></td>
 	<td><select name = "new" >
-	  {% for val in result['existing_values'] %}
-	  <option>{{ val }}</option>
-	  {% endfor %}
+	    <option style="display:none;"></option>
+	    {% for val in result['existing_values'] %}
+	    <option>{{ val }}</option>
+	    {% endfor %}
 	</select></td><br>
 
 	<td><input type = "submit" name = "btn" value = "Modify"></td>
-	<td><input type = "submit" name = "btn" value = "AddToNorm"></td>
+	<td><input type = "submit" name = "btn" value = "Placeholder"></td>
       </form>
 
     </tr>

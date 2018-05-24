@@ -1,26 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>New values check & update id:[{{result["range"][0]}},{{result["range"][1]}}]</h3>
+<h3>New values check & update id:[{{result["from"]}},{{result["to"]}}]</h3>
 <div>
   {% if result["new_values"] %}
 
-  <p>
-    <b>Unseen values:</b><br>
-    {% for val in result["new_values"] %}
-    {{ val }} <br>
-    {% endfor %}
-  </p>
-  
+  <p><b>Unseen values:</b></p>
+
   <table>
+    
+    {% for value in result["new_values"] %}
+    <tr>
       <form action="" method = "post">	
+	<input type = "hidden" name = "formID" value = {{value}} />
+	<td><label for = "new">{{value}}</label></td>
+	<td><select name = "new" >
+	    <option style="display:none;"></option>
+	    {% for val in result['existing_values'] %}
+	    <option>{{ val }}</option>
+	    {% endfor %}
+	</select></td><br>
+
 	<td><input type = "submit" name = "btn" value = "Modify"></td>
+	<td><input type = "submit" name = "btn" value = "Placeholder"></td>
       </form>
+
+    </tr>
+    {% endfor %}  
   </table>
+
   {% endif %}
 
   <p>
-    <b>Existing values before id {{ result["range"][0] }}:</b><br>
+    <b>Existing values before id {{ result["from"] }}:</b><br>
     {% for val in result["existing_values"] %}
     {{ val }} <br>
     {% endfor %}

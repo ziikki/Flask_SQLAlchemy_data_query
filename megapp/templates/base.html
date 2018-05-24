@@ -16,6 +16,7 @@
     </div>
     <div>
       <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('show_all') }}">Show All</a>
       <a href="{{ url_for('add') }}">Add Record</a>
       <a href="{{ url_for('unseen') }}">Check Unseen</a>
       
@@ -32,9 +33,11 @@
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul>
+      <font color=#3F94BC>
       {% for message in messages %}
       <li>{{ message }}</li>
       {% endfor %}
+      </font>
     </ul>
     {% endif %}
     {% endwith %}
