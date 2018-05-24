@@ -141,19 +141,21 @@ def unseen():
 @app.route('/unseen/<data>', methods=['GET','POST'])
 def modify_unseen(data):
     args = json.loads(data)
-    result = check_unseen(args['from'],args['to'], args['target_column'])
     if request.method == 'POST':
-        result = check_unseen(args['from'],args['to'], args['target_column'])
         if all(request.form.values()) and request.form['btn']=='Modify':
             # modify values
             t_col = getattr(CancerData, args['target_column'])
             old_val = request.form['formID']
             new_val = request.form['new']
             
-            db.session.query(CancerData).filter(t_col==old_val).update({t_col:new_val})
+            entries = db.session.query(CancerData).filter(t_col==old_val)
+            cnt = entries.count()
+            entries.update({t_col:new_val})
             print(db.session.new)
             db.session.commit()
-            flash("I get that {} to {}".format(request.form['formID'], request.form['new']))
+            flash("Updated {} entries with Col[{}] value {} to {}".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
+            
+    result = check_unseen(args['from'],args['to'], args['target_column'])
     return render_template("modify_unseen.html", title="Unseen Values", result=result)
 
 def check_unseen(_from, _to , target_column):
