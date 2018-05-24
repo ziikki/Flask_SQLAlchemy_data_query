@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Add</h1>
+<h1>Add Record</h1>
 <hr/>
 
 <form action = "{{ request.path }}" method = "post">
@@ -11,8 +11,8 @@
   <input type = "text" name = "age" placeholder = "10-19" /><br>
   <label for = "menopause">menopause</label><br>
   <input type = "text" name = "menopause" placeholder = "lt40"><br>
-  <label for = "tumor_size">tumor-size</label><br>
-  <textarea name = "tumor_size" placeholder = "5-9" /></textarea><br>
+  <label for = "tumor_size">tumor_size</label><br>
+  <input type = "text" name = "tumor_size" placeholder = "5-9" /><br>
   <label for = "inv_nodes"> inv_nodes </label><br>
   <input type = "text" name = "inv_nodes" placeholder = "0-2" /><br>
   <label for = "node_caps"> node_caps </label><br>

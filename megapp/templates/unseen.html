@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Check For Unseen Values</h1>
+<hr/>
+
+<form action = "{{ request.path }}" method = "post">
+  <label for = "from">from_id</label><br>
+  <input type = "text" name = "from"/><br>
+  <label for = "to">to_id</label><br>
+  <input type = "text" name = "to" /><br>
+  <label for = "t_col">target column</label><br>
+  <select name = "t_col" >
+    {% for col in cols %}
+    <option>{{ col }}</option>
+    {% endfor %}
+  </select><br>
+  <input type = "submit" value = "Submit" />
+</form>
+{% endblock %}

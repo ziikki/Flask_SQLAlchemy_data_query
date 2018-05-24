@@ -7,6 +7,7 @@ from megapp.models import User, CancerData
 from flask import request
 from werkzeug.urls import url_parse
 from sqlalchemy import and_
+import json
 
 @app.route('/')
 @app.route('/index')
@@ -15,7 +16,7 @@ def index():
     counts = db.session.query(CancerData).count()
     
     return render_template('index.html', title='Home', user=current_user, counts=counts)    
-    
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -59,11 +60,18 @@ def register():
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
     if request.method == 'POST':
-        if not request.form['age'] or not request.form['menopause']:
+        if all(request.form.values()):
             new_entry = CancerData(Class = request.form['Class'],
                                    age = request.form['age'],
                                    menopause = request.form['menopause'],
-                                   tumor_size =request.form['tumor_size'])
+                                   tumor_size = request.form['tumor_size'],
+                                   inv_nodes = request.form['inv_nodes'],
+                                   node_caps = request.form['node_caps'],
+                                   deg_malig = request.form['deg_malig'],
+                                   breast = request.form['breast'],
+                                   breast_quad = request.form['breast_quad'],
+                                   irradiat = request.form['irradiat']
+            )
             print(new_entry.to_str())
             db.session.add(new_entry)
             db.session.flush()
@@ -71,6 +79,8 @@ def add():
             flash('new entry created. id: {}'.format(new_entry.id))
             db.session.commit()
             return redirect(url_for('index'))
+        else:
+            flash("missing values")
     return render_template('add.html')
 
 @app.route('/add_json', methods = ['GET','POST'])
@@ -79,17 +89,19 @@ def add_json():
         flash('We got that json file!')
         return "Nothing"
     return redirect(url_for('index'))
-    
+
 
 @app.route('/delete/<int:id>', methods = ['GET'])
 def delete(id):
-    if CancerData.query.filter_by(id=id).first():
-        
+    entry = CancerData.query.filter_by(id=id).first()
+    if entry:
+        db.session.delete(entry)
+        db.session.commit()
         flash('id {} deleted'.format(id))
     else:
         flash('invalid id: {}, failed to delete'.format(id))
     return redirect(url_for('index'))
-                            
+
 #########################################################
 
 @app.route('/firstnrows/<int:rows>',methods=['GET'])
@@ -113,7 +125,68 @@ def find_value(column,value):
         flash('The feature does not exist!')
         entries = []
     return render_template('data.html', title='Query result by {}'.format(column), query_result=entries)
-        
+
+
+@app.route('/unseen', methods = ['GET','POST'])
+def unseen():
+    if request.method == 'POST':
+        if all([request.form['from'] ,request.form['to'] ,request.form['t_col'] ]):
+            args = { "from" : request.form['from'] ,
+                     "to" : request.form['to'],
+                     "target_column" : request.form['t_col'] }
+            return redirect(url_for('modify_unseen', data = json.dumps(args)))
+    columns = CancerData.get_cols()
+    return render_template("unseen.html", title="Check for Unseen", cols = columns)
+
+@app.route('/unseen/<data>', methods=['GET','POST'])
+def modify_unseen(data):
+    args = json.loads(data)
+    result = check_unseen(args['from'],args['to'], args['target_column'])
+    if request.method == 'POST':
+        result = check_unseen(args['from'],args['to'], args['target_column'])
+        if all(request.form.values()) and request.form['btn']=='Modify':
+            # modify values
+            t_col = getattr(CancerData, args['target_column'])
+            old_val = request.form['formID']
+            new_val = request.form['new']
+            
+            db.session.query(CancerData).filter(t_col==old_val).update({t_col:new_val})
+            print(db.session.new)
+            db.session.commit()
+            flash("I get that {} to {}".format(request.form['formID'], request.form['new']))
+    return render_template("modify_unseen.html", title="Unseen Values", result=result)
+
+def check_unseen(_from, _to , target_column):
+    existing_values = to_list(
+        db.session.query(getattr(CancerData, target_column))
+        .filter( CancerData.id < _from)
+        .distinct().all()
+    )
+    recent_values = to_list(
+        db.session.query(getattr(CancerData, target_column))
+        .filter(and_(CancerData.id >= _from, CancerData.id < _to))
+        .distinct().all()
+    )
+    new_values = [value for value in recent_values if value not in existing_values]
+    result = {
+        "from":_from,
+        "to":_to,
+        "target":target_column,
+        "new_values":new_values,
+        "existing_values":existing_values
+        #"recent_values":to_str(recent_values)
+    }
+    return result
+
+def to_list(values):
+    return [value[0] for value in values]
+
+def to_str(values, _for='values'):
+    #TODO: newline
+    return ' '.join(values)
+
+
+
 
 @app.route('/neverseenbefore/',methods=['POST'])
 def find_new():
@@ -122,30 +195,15 @@ def find_new():
     frange = args['filter_range']
     target_column = args['target_column']
 
-    existing_values = to_list(
-        db.session.query(getattr(CancerData, target_column))
-        .filter( CancerData.id < frange[0])
-        .distinct().all()
-    )
-    recent_values = to_list(
-        db.session.query(getattr(CancerData, target_column))
-        .filter(and_(CancerData.id >= frange[0], CancerData.id < frange[1]))
-        .distinct().all()
-    )
-    new_values = [value for value in recent_values if value not in existing_values]
-    result = {
-        "range":frange,
-        "target":target_column,
-        "new_values":new_values,
-        "existing_values":to_str(existing_values)
-        #"recent_values":to_str(recent_values)
-    }
-    return render_template("update.html", title="UpdateValue", result=result)
+    result = check_unseen(frange, target_column)
+    # if not request.form['old']:
+    #     new_entry = CancerData(Class = request.form['Class'])
+    #     print(new_entry.to_str())
+    #     db.session.add(new_entry)
+    #     db.session.flush()
+    #     # de.session.new #view objects in the session
+    #     flash('new entry created. id: {}'.format(new_entry.id))
+    #     db.session.commit()
+    #     return redirect(url_for('index'))
     
-def to_list(values):
-    return [value[0] for value in values]
-
-def to_str(values, _for='values'):
-    #TODO: newline
-    return ' '.join(values)
-    
+    return render_template("new_value.html", title="UpdateValue", result=result)

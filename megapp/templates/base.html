@@ -16,6 +16,9 @@
     </div>
     <div>
       <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('add') }}">Add Record</a>
+      <a href="{{ url_for('unseen') }}">Check Unseen</a>
+      
       {% if current_user.is_anonymous %}
       <a href="{{ url_for('login') }}">Login</a>
       {% else %}

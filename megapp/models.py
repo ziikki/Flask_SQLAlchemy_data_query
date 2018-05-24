@@ -46,7 +46,10 @@ class CancerData(db.Model):
     breast = db.Column(db.String(10))
     breast_quad = db.Column(db.String(10))
     irradiat = db.Column(db.String(10))
-
+    
+    @staticmethod
+    def get_cols():
+        return ['Class','age','menopause','tumor_size','inv_nodes','node_caps','deg_malig','breast','breast_quad','irradiat']
     
     def to_str(self):
         return '[Class]  {},  [age]  {},  [menopause]  {},  [tumor_size]  {},  [inv_nodes]  {},  [node_caps]  {},  [deg_malig]  {},  [breast]  {},  [breast_quad]  {},  [irradiat] {}'.format(self.Class, self.age, self.menopause, self.tumor_size, self.inv_nodes, self.node_caps, self.deg_malig, self.breast, self.breast_quad, self.irradiat)

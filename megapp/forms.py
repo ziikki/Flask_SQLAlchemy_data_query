@@ -1,7 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from megapp.models import User
+
+class UpdateForm(FlaskForm):
+    updated = SelectField('Update', validators=[DataRequired()])
+    
+    #def __init__(self, *args, **kwargs):
+    #    super().__init__(*args, **kwargs)
+    #    self.items.choices = []
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()]) #DR():notEmpty
