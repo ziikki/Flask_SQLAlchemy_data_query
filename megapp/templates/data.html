@@ -7,8 +7,10 @@
 {% else %}
 <div><p>Here is your query result:</p></div>
 
-{% for entry in query_result %}
-<div><p><b>{{ entry.id }} : </b>{{ entry.to_str() }}</p></div>
-{% endfor %}
+<div>
+  {% for entry in query_result %}
+  <p><b>{{ entry.id }} : </b>{{ entry.to_str() }}</p>
+  {% endfor %}
+</div>
 {% endif %}
 {% endblock %}

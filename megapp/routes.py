@@ -12,10 +12,8 @@ import json
 @app.route('/')
 @app.route('/index')
 def index():
-
-    counts = db.session.query(CancerData).count()
-    
-    return render_template('index.html', title='Home', user=current_user, counts=counts)    
+    count = CancerData.query.count()
+    return render_template('index.html', title='Home', user=current_user, counts=count)   
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -107,7 +105,7 @@ def delete(id):
 def show_all():
     entries = CancerData.query.all()
     return render_template('data.html', title='All entries', query_result=entries)
-    
+
 @app.route('/firstnrows/<int:rows>',methods=['GET'])
 def get_n_rows(rows):
     if rows > 0:
@@ -154,22 +152,22 @@ def modify_unseen(data):
     args = json.loads(data)
     if request.method == 'POST':
         if all(request.form.values()) and request.form['btn']=='Modify':
-                # modify values
-                t_col = getattr(CancerData, args['target_column'])
-                old_val = request.form['formID']
-                new_val = request.form['new']
-                
-                entries = db.session.query(CancerData).filter(t_col==old_val)
-                cnt = entries.count()
-                entries.update({t_col:new_val})
-                print(db.session.new)
-                db.session.commit()
-                flash("Updated {} entries with col'{}' value '{}' to '{}'".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
+            # modify values
+            t_col = getattr(CancerData, args['target_column'])
+            old_val = request.form['formID']
+            new_val = request.form['new']
+            
+            entries = db.session.query(CancerData).filter(t_col==old_val)
+            cnt = entries.count()
+            entries.update({t_col:new_val})
+            print(db.session.new)
+            db.session.commit()
+            flash("Updated {} entries with col'{}' value '{}' to '{}'".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
         elif request.form['btn']=='Placeholder':
             flash("Placeholder pressed")
         else:
             flash("Please complete the form.")
-    result = check_unseen(args)
+            result = check_unseen(args)
     return render_template("modify_unseen.html", title="Unseen Values", result=result)
 
 def check_unseen(args):

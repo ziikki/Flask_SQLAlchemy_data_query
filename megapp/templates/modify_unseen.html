@@ -2,10 +2,10 @@
 
 {% block content %}
 <h3>New values check & update id:[{{result["from"]}},{{result["to"]}}]</h3>
+
 <div>
   {% if result["new_values"] %}
   <table>
-    
     {% for value in result["new_values"] %}
     <tr>
       <form action="" method = "post">	
@@ -16,8 +16,7 @@
 	    {% for val in result['existing_values'] %}
 	    <option>{{ val }}</option>
 	    {% endfor %}
-	</select></td><br>
-
+	</select></td>
 	<td><input type = "submit" name = "btn" value = "Modify"></td>
 	<td><input type = "submit" name = "btn" value = "Placeholder"></td>
       </form>

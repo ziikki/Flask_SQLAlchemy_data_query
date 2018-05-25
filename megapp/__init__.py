@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 login = LoginManager(app)
-login.login_view = 'login' #force login
+#login.login_view = 'login' #force login
 
 #bottom
 from megapp import routes
