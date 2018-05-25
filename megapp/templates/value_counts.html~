@@ -2,13 +2,20 @@
 
 {% block content %}
 
+
 {% if not query_result %}
 <div><p>Your search has no result.</p></div> 
 {% else %}
 <div><p>Here is your query result:</p></div>
 
-{% for entry in query_result %}
-<div><p><b>{{ entry.id }} : </b>{{ entry.to_str() }}</p></div>
-{% endfor %}
+<table>
+  {% for entry in cnts %}
+  <tr>
+    <th>{{ entry.key }}</th>
+    <td>{{ entry.value }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
 {% endif %}
 {% endblock %}

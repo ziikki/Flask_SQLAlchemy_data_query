@@ -11,12 +11,17 @@
 
 <div>
   <p>Supported :</p>
+  <ul name = "GET">
+    <li>/firstnrows/{rows} <a href="{{ url_for('get_n_rows', rows = 5) }}">&rarr;</a> </li>
+    <li>/id/{id} <a href="{{ url_for('find_id', id = 5) }}">&rarr;</a> </li>
+    <li>/count/{column_name} <a href="{{ url_for('value_counts', column = "age") }}">&rarr;</a> </li>
+    <li>/filter/{column_name}/{value} <a href="{{ url_for('find_value', column = 'age', value = '30-39') }}">&rarr;</a> </li>
+    <li>/delete/{id} <a href="{{ url_for('delete', id = 300) }}">&rarr;</a> </li>
+  </ul>
+  
   <ul>
-    <li>/rows/#</li>
-    <li>/id/#</li>
-    <li>/filter/column_name/value</li>
+    <li>/showall</li>
     <li>/add</li>
-    <li>/delete/# (by id)</li>
     <li>/unseen</li>
   </ul>
 </div>

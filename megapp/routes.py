@@ -6,7 +6,7 @@ from flask_login import current_user, login_user, logout_user
 from megapp.models import User, CancerData
 from flask import request
 from werkzeug.urls import url_parse
-from sqlalchemy import and_
+from sqlalchemy import func, and_
 import json
 
 @app.route('/')
@@ -109,7 +109,7 @@ def show_all():
     return render_template('data.html', title='All entries', query_result=entries)
     
 @app.route('/firstnrows/<int:rows>',methods=['GET'])
-def get_rows(rows):
+def get_n_rows(rows):
     if rows > 0:
         entries = CancerData.query.limit(rows).all()
     return render_template('data.html', title='First {} rows of data'.format(rows), query_result=entries)
@@ -118,7 +118,6 @@ def get_rows(rows):
 def find_id(id):
     entry = CancerData.query.filter_by(id=id).all()
     return render_template('data.html', title='Query result by id', query_result=entry)
-
 
 @app.route('/filter/<string:column>/<value>')
 def find_value(column,value):
@@ -130,6 +129,11 @@ def find_value(column,value):
         entries = []
     return render_template('data.html', title='Query result by {}'.format(column), query_result=entries)
 
+@app.route('/count/<string:column>')
+def value_counts(column):
+    col = getattr(CancerData,column)
+    counts = db.session.query(col, func.count(CancerData.id)).group_by(col).all()
+    return render_template('value_counts.html', title='Value Counts', counts = counts, column_name = column)
 
 @app.route('/unseen', methods = ['GET','POST'])
 def unseen():
@@ -160,7 +164,7 @@ def modify_unseen(data):
                 entries.update({t_col:new_val})
                 print(db.session.new)
                 db.session.commit()
-                flash("Updated {} entries with Col[{}] value {} to {}".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
+                flash("Updated {} entries with col'{}' value '{}' to '{}'".format( cnt, args['target_column'], request.form['formID'], request.form['new']))
         elif request.form['btn']=='Placeholder':
             flash("Placeholder pressed")
         else:

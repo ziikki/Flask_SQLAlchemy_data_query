@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+{% if not counts %}
+<div><p>The query failed.</p></div> 
+{% else %}
+<div><h3> Value Counts for [{{ column_name }}] </h3></div>
+
+<table>
+  {% for entry in counts %}
+  <tr>
+    <th>{{ entry[0] }}</th>
+    <td>{{ entry[1] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endif %}
+{% endblock %}
