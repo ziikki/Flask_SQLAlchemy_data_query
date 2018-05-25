@@ -143,7 +143,8 @@ def unseen():
             return redirect(url_for('modify_unseen', data = json.dumps(args)))
         else:
             flash("Please complete the form.")
-
+    else:
+        pass
     columns = CancerData.get_cols()
     return render_template("unseen.html", title="Check for Unseen", cols = columns)
 
@@ -167,7 +168,9 @@ def modify_unseen(data):
             flash("Placeholder pressed")
         else:
             flash("Please complete the form.")
-            result = check_unseen(args)
+    else:
+        pass
+    result = check_unseen(args)
     return render_template("modify_unseen.html", title="Unseen Values", result=result)
 
 def check_unseen(args):
